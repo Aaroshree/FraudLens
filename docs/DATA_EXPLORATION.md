@@ -174,13 +174,17 @@ is better tested on data with device, geo, and remittance signals.
    w_i' = w_i / (1 - w_geo)
    ```
 
-3. **Velocity windows.** Changed from 1 min / 1 h / 24 h to 10 min / 1 h / 24 h, with thresholds at the 99th percentile of legit counts per card.
+3. **Velocity windows.** 10 min and 1 h only, with thresholds at the 99th percentile of legit
+   counts per card (flag if count > 1 in 10 min, > 2 in 1 h). The 24 h window is disabled
+   because it is inverted on Sparkov (Finding 7).
 4. **Behavior features.** `log(amt)`, cyclical hour encoding (`sin(2*pi*hour/24)`, `cos(2*pi*hour/24)`), `category`, and gap since the previous transaction.
 5. **Two Behavior variants.** The paper's Isolation Forest (unsupervised) and a supervised gradient boosting model, compared in the results.
 6. **No leakage.** Graph agent counts use only transactions before each row's timestamp.
 7. **Split.** Time-based, not random. Isolation Forest is trained on early non-fraud rows only.
 8. **Cold-start.** Defined as each card's first 3 transactions.
-9. **Weights.** Paper weights are the baseline. A learned-weights version (paper Future Work 9.2.2) is compared against it.
+9. **Weights.** Paper weights (Geo removed, renormalized) are the baseline. A learned-weights
+   version is compared against it (Finding 11). The Graph agent uses N only on Sparkov
+   (Finding 9).
 
 ## Limitations
 
