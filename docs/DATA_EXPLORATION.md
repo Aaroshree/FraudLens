@@ -71,6 +71,35 @@ Gaps are minutes to hours, so 1-minute burst windows will rarely fire on this da
 
 Because 23% of legit transactions occur at night, an Isolation Forest trained on legit data will not treat night as anomalous. Hour is a strong signal for supervised models but a weak one for the unsupervised Behavior agent. This motivates adding a supervised Behavior variant.
 
+### 7. Velocity agent: weak coverage, 24h window inverted
+
+| Window | Fraud flag rate | Legit flag rate |
+|---|---|---|
+| 10 min | 1.03% | 0.08% |
+| 1 hour | 5.61% | 0.27% |
+| 24 hours | 0.15% | 0.84% |
+
+Short and medium windows are strongly informative when they fire, but cover only 1% and
+5.6% of fraud. The 24-hour window is inverted (fraud is flagged less than legit), so it is
+disabled on Sparkov. Velocity-only AUC is 0.529 after disabling the 24h window
+(POS 0.524, QR 0.538).
+- **Velocity coverage.** Even after disabling the inverted 24h window, velocity-only AUC is
+  0.529, so fraud on Sparkov is mostly not detectable by transaction frequency.
+
+### 8. Behavior agent: Isolation Forest vs supervised baseline
+
+Time-based split (first 70% train, last 30% test, test fraud rate 0.61%).
+
+| Model | ROC-AUC | PR-AUC | POS PR-AUC | QR PR-AUC |
+|---|---|---|---|---|
+| Isolation Forest (per card, paper) | 0.847 | 0.064 | 0.036 | 0.184 |
+| Gradient boosting (supervised extension) | 0.946 | 0.764 | 0.761 | 0.778 |
+
+A random model has PR-AUC of about 0.006. The unsupervised agent carries real signal
+(mostly from amount) but with low precision. The supervised model is far stronger, which
+supports the paper's future work on learned components. Both are optimistic because
+Sparkov fraud is simulated.
+
 ## How the findings relate to the paper
 
 ### Supported
