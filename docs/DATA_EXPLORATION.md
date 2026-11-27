@@ -100,6 +100,38 @@ A random model has PR-AUC of about 0.006. The unsupervised agent carries real si
 supports the paper's future work on learned components. Both are optimistic because
 Sparkov fraud is simulated.
 
+### 9. Graph-inspired agent: only novelty carries signal
+
+| Signal | ROC-AUC | PR-AUC |
+|---|---|---|
+| N (interaction novelty) | 0.632 | 0.0096 |
+| F (merchant frequency) | 0.477 | 0.0058 |
+| C (merchant connectivity) | 0.480 | 0.0059 |
+| S_graph = (N + F + C) / 3 | 0.582 | 0.0078 |
+
+### 10. Full pipeline: paper heuristics vs calibrated thresholds
+
+Time-based split. Thresholds calibrated on the first half of the test period, evaluated on
+the second half. Context labels are proxies (POS/QR), Geo disabled, weights renormalized.
+
+| Setup | Thresholds | Precision | Recall | FPR |
+|---|---|---|---|---|
+| Paper agents (Isolation Forest) | Paper | 0.103 | 0.150 | 0.76% |
+| Paper agents (Isolation Forest) | Calibrated | 0.036 | 0.252 | 3.98% |
+| With supervised Behavior | Paper | 0.874 | 0.153 | 0.013% |
+| With supervised Behavior | Calibrated | 0.085 | 0.793 | 5.02% |
+
+- The paper's thresholds do not transfer to Sparkov: almost nothing is escalated.
+- At about 5% FPR, the paper's agents reach recall 0.25 and the supervised variant 0.79.
+- Precision is low because fraud is 0.6% of transactions, not because of a bug.
+- Fixed convex weights cap the strongest agent's influence (Behavior weight 0.267 in POS).
+- Supervised scores are bimodal, so the Single OTP tier is nearly empty (1.2% of fraud).
+
+Random PR-AUC is about 0.006. With 693 merchants of about 1,900 transactions each, merchant
+rarity (F) and connectivity (C) do not separate fraud. Only first-time card-merchant pairs
+(N) help, weakly. On Sparkov the Graph agent uses N only. The paper's full formula is kept
+as a baseline. Graph signals designed for new or obscure merchants need data that contains them.
+
 ## How the findings relate to the paper
 
 ### Supported
