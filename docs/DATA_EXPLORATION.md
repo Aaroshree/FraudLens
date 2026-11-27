@@ -132,6 +132,26 @@ rarity (F) and connectivity (C) do not separate fraud. Only first-time card-merc
 (N) help, weakly. On Sparkov the Graph agent uses N only. The paper's full formula is kept
 as a baseline. Graph signals designed for new or obscure merchants need data that contains them.
 
+### 11. Learned weights vs fixed weights
+
+Weights fit per context on the first half of the test period (non-negative logistic
+regression, normalized to sum to 1), evaluated on the second half. Thresholds at the 95th
+percentile of legit scores from the first half.
+
+| Setup | ROC-AUC | PR-AUC | Recall @ FPR |
+|---|---|---|---|
+| Paper agents, fixed weights | 0.833 | 0.060 | 0.252 @ 3.98% |
+| Paper agents, learned weights | 0.848 | 0.064 | 0.336 @ 4.33% |
+| Supervised Behavior, fixed weights | 0.926 | 0.602 | 0.787 @ 3.36% |
+| Supervised Behavior, learned weights | 0.954 | 0.726 | 0.870 @ 3.41% |
+| Supervised Behavior alone | 0.940 | 0.740 | 0.915 @ 4.88% |
+
+Learned weights beat the paper's fixed weights, supporting future work 9.2.2. They put
+0.90 to 0.94 of the weight on Behavior, so on Sparkov the ensemble adds little over a
+strong Behavior model (PR-AUC 0.726 vs 0.740). POS and QR learned almost the same weights,
+so context-aware weighting is not supported on these proxy contexts. The multi-agent design
+is better tested on data with device, geo, and remittance signals.
+
 ## How the findings relate to the paper
 
 ### Supported
