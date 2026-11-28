@@ -20,12 +20,12 @@ agents:
   behavior:
     enabled: true
     beta_cold_start: 0.5
-    min_history_txns: 5
+    min_train_rows: 1
     features: [log_amt, hour_sin, hour_cos, cat, vel_10m, vel_1h, log_gap]
     isolation_forest: {n_estimators: 100, contamination: auto, random_state: 42}
     supervised:
       enabled: true
-      max_iter: 200
+      max_iter: 100
       learning_rate: 0.1
       random_state: 42
   graph_risk:
