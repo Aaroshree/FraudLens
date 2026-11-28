@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fraudlens"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = ["pandas", "numpy", "scikit-learn", "pyarrow", "pyyaml"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+fraudlens = ["config.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

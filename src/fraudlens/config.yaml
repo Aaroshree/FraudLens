@@ -1,0 +1,72 @@
+profile: sparkov
+
+contexts: [remittance, pos, qr]
+context_rule:
+  qr_category_suffix: "_net"
+
+agents:
+  velocity:
+    enabled: true
+    lambda_amp: 0.0
+    cold_start_multiplier: 1.0
+    windows:
+      short:  {feature: vel_10m, threshold: 1, severity: 0.40, enabled: true}
+      medium: {feature: vel_1h,  threshold: 2, severity: 0.40, enabled: true}
+      long:   {feature: vel_24h, threshold: 0, severity: 0.40, enabled: false}
+  geo:
+    enabled: false
+    alpha: 0.6
+    location_norm_km: 500
+  behavior:
+    enabled: true
+    beta_cold_start: 0.5
+    min_history_txns: 5
+    features: [log_amt, hour_sin, hour_cos, cat, vel_10m, vel_1h, log_gap]
+    isolation_forest: {n_estimators: 100, contamination: auto, random_state: 42}
+    supervised:
+      enabled: true
+      max_iter: 200
+      learning_rate: 0.1
+      random_state: 42
+  graph_risk:
+    enabled: true
+    k: 0.3
+    use: {novelty: true, frequency: false, connectivity: false}
+
+synthesis:
+  paper_weights:
+    remittance: {velocity: 0.15, geo: 0.40, behavior: 0.30, graph_risk: 0.15}
+    pos:        {velocity: 0.40, geo: 0.25, behavior: 0.20, graph_risk: 0.15}
+    qr:         {velocity: 0.30, geo: 0.25, behavior: 0.25, graph_risk: 0.20}
+  renormalise_disabled: true
+  learned:
+    enabled: true
+    method: nonneg_logistic
+    C: 1.0
+
+otp_interlock:
+  actions: [approve, single_otp, dual_otp, block]
+  paper_thresholds:
+    remittance: [0.35, 0.60, 0.80]
+    pos:        [0.50, 0.70, 0.90]
+    qr:         [0.55, 0.75, 0.90]
+  calibration:
+    percentiles: [95.0, 99.0, 99.9]
+
+evaluation:
+  seed: 42
+  train_frac: 0.70
+  calibration_frac_of_test: 0.50
+  positive_decisions: [single_otp, dual_otp, block]
+  paths:
+    raw_csv: data/raw/fraudTrain.csv
+    features: data/processed/features.parquet
+    artifacts: artifacts
+
+profiles:
+  paper:
+    agents:
+      geo: {enabled: true}
+      graph_risk: {use: {novelty: true, frequency: true, connectivity: true}}
+      velocity:
+        cold_start_multiplier: 0.8
