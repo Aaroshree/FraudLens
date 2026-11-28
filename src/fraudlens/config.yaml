@@ -3,6 +3,9 @@ profile: sparkov
 contexts: [remittance, pos, qr]
 context_rule:
   qr_category_suffix: "_net"
+features:
+  windows_sec: {vel_10m: 600, vel_1h: 3600, vel_24h: 86400}
+  cold_start_txns: 3
 
 agents:
   velocity:

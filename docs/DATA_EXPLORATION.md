@@ -132,7 +132,8 @@ Weights are fit per context on the first half of the test period (balanced logis
 | Paper agents, learned weights | 0.848 | 0.064 | 0.337 | 4.33% |
 | Supervised Behavior, fixed weights | 0.926 | 0.602 | 0.793 | 5.02% |
 | Supervised Behavior, learned weights | 0.954 | 0.726 | 0.876 | 5.06% |
-| Supervised Behavior score alone | 0.940 | 0.740 | not measured | not measured |
+| Isolation Forest score alone | 0.834 | 0.050 | 0.427 | 5.40% |
+| Supervised Behavior score alone | 0.940 | 0.740 | 0.915 | 5.22% |
 
 Learned weights (order: velocity, behavior, graph risk):
 
@@ -143,7 +144,7 @@ Learned weights (order: velocity, behavior, graph risk):
 
 Learned weights beat the paper's fixed weights, supporting future work 9.2.2. Recall comparisons are at slightly different FPR (within 0.4 points). With supervised Behavior, the learned weights put 0.90 to 0.94 of the weight on Behavior and drive Velocity to nearly zero. POS and QR learn similar weights, so context-aware weighting is not supported on these proxy contexts. The multi-agent design is better tested on data with device, geo, and remittance signals.
 
-Against the Behavior score alone, the learned ensemble has higher ROC-AUC (0.954 vs 0.940) and lower PR-AUC (0.726 vs 0.740). Calibrated recall for Behavior alone has not yet been measured with the package.
+Against the Behavior score alone, the supervised learned ensemble has higher ROC-AUC (0.954 vs 0.940) but lower PR-AUC (0.726 vs 0.740) and lower recall at the 5% operating point (0.876 at 5.06% FPR vs 0.915 at 5.22% FPR). The FPRs differ by 0.16 points, so the comparison is close but not exactly matched. The extra agents do not beat the strongest single component where it matters for operations. For Isolation Forest, the ensemble improves both AUCs (0.848 vs 0.834 ROC-AUC, 0.064 vs 0.050 PR-AUC); its recall is not comparable because the FPRs differ (4.33% vs 5.40%).
 
 Note on earlier numbers: an earlier standalone script (`scripts/check_learned_weights.py`) reported FPR near 3.4% for the supervised rows. The package reports about 5.0%, which matches the 5% calibration target and the Finding 10 run. The package numbers are used throughout.
 
@@ -189,4 +190,4 @@ Note on earlier numbers: an earlier standalone script (`scripts/check_learned_we
 - Paper results came from a different synthetic dataset where fraud was injected in the form each agent detects. Results here are an independent test and are expected to be lower.
 - Each card has about 1,000 transactions, so very few test cards should lack training history. The cold-start handling is probably barely exercised on Sparkov. Check the count before relying on this.
 - One time split and one random seed, with no confidence intervals.
-- The learned ensemble does not clearly beat its strongest single component (Behavior score alone) on Sparkov: ROC-AUC is higher, PR-AUC is lower.
+- The learned ensemble does not beat its strongest single component on Sparkov. With supervised Behavior, Behavior alone has higher recall at the 5% operating point (0.915 vs 0.876) and higher PR-AUC, while the ensemble has higher ROC-AUC.

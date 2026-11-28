@@ -62,6 +62,7 @@ Setup: 1,296,675 transactions, 0.58% fraud. Time split: first 70% trains the mod
 | Paper agents (Isolation Forest), fixed weights, paper thresholds | 0.833 | 0.060 | 0.150 | 0.76% |
 | Paper agents (Isolation Forest), fixed weights, calibrated thresholds | 0.833 | 0.060 | 0.252 | 3.97% |
 | Supervised Behavior (extension), learned weights, calibrated thresholds | 0.954 | 0.726 | 0.876 | 5.06% |
+| Supervised Behavior alone, calibrated thresholds | 0.940 | 0.740 | 0.915 | 5.22% |
 
 Full tables (by context, decision distribution, weights) are in [docs/RESULTS.md](docs/RESULTS.md).
 
@@ -69,7 +70,7 @@ Full tables (by context, decision distribution, weights) are in [docs/RESULTS.md
 
 1. **The paper's thresholds do not transfer.** They almost never fire on Sparkov (recall 0.15). Calibrating thresholds on legitimate score percentiles fixes this, and the calibration holds on later data.
 2. **The unsupervised Behavior agent is weak here.** Night-time transactions are common for legitimate users (23.2%), so an Isolation Forest does not treat night as unusual. A supervised Behavior variant is much stronger (recall 0.793 vs 0.252 with fixed weights at about 5% FPR).
-3. **Learned weights beat the paper's fixed weights**, but they put 0.90 to 0.94 of the weight on Behavior, and POS and QR end up with similar weights. On these proxy contexts, context-aware weighting is not supported.
+3. **Learned weights beat the paper's fixed weights, but not the Behavior score alone.** They put 0.90 to 0.94 of the weight on Behavior, and POS and QR end up with similar weights. At the 5% operating point, Behavior alone catches more fraud (recall 0.915 vs 0.876 for the ensemble). On these proxy contexts, neither the extra agents nor context-aware weighting are supported.
 4. **The Graph agent works only through novelty** (first-time card and merchant pairs). Merchant frequency and connectivity carry no signal on Sparkov.
 5. **Velocity is weak**: fraud here rarely arrives in bursts (velocity-only AUC 0.529).
 
@@ -79,7 +80,7 @@ Full tables (by context, decision distribution, weights) are in [docs/RESULTS.md
 - Precision is about 0.09 at 5% FPR because fraud is rare. This is a base-rate effect.
 - There is no remittance data, device field or real geography, so Geo, device mismatch and SIM-swap logic cannot be tested on Sparkov.
 - One split and one seed, with no confidence intervals.
-- With learned weights the ensemble has higher ROC-AUC than the Behavior score alone (0.954 vs 0.940) but lower PR-AUC (0.726 vs 0.740). On Sparkov the extra agents add little over a strong Behavior model.
+- With supervised Behavior, the learned ensemble has higher ROC-AUC than the Behavior score alone (0.954 vs 0.940) but lower PR-AUC (0.726 vs 0.740) and lower recall at about 5% FPR (0.876 vs 0.915). On Sparkov, the extra agents do not beat a strong Behavior model.
 - These numbers are not comparable with the paper's synthetic results.
 
 ## Status
